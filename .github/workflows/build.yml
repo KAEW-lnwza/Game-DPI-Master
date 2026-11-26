@@ -13,6 +13,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Unzip project (ถ้ามีไฟล์ zip)
+        run: |
+          for z in *.zip; do
+            [ -f "$z" ] && unzip -o "$z" -d extracted_project
+          done
+          true
+
       - name: Find project directory
         id: proj
         run: |
