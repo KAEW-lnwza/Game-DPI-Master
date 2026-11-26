@@ -45,6 +45,11 @@ jobs:
           }
           EOF
 
+      - name: Fix Kotlin catch syntax
+        working-directory: ${{ steps.proj.outputs.dir }}
+        run: |
+          sed -i 's/catch (_: Exception)/catch (e: Exception)/g' app/src/main/java/com/gamedpi/master/MainActivity.kt
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
