@@ -45,10 +45,12 @@ jobs:
           }
           EOF
 
-      - name: Fix Kotlin catch syntax
+      - name: Fix Kotlin source errors
         working-directory: ${{ steps.proj.outputs.dir }}
         run: |
-          sed -i 's/catch (_: Exception)/catch (e: Exception)/g' app/src/main/java/com/gamedpi/master/MainActivity.kt
+          F=app/src/main/java/com/gamedpi/master/MainActivity.kt
+          sed -i 's/catch (_: Exception)/catch (e: Exception)/g' $F
+          sed -i '114s/text = /this.text = /' $F
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
