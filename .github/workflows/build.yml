@@ -13,6 +13,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Find project directory
+        id: proj
+        run: |
+          f=$(find . -name settings.gradle.kts -not -path './.git/*' | head -n 1)
+          if [ -z "$f" ]; then
+            echo "ไม่พบ settings.gradle.kts ใน repo นี้ รายการไฟล์:"
+            find . -not -path './.git/*' | head -50
+            exit 1
+          fi
+          echo "dir=$(dirname "$f")" >> "$GITHUB_OUTPUT"
+          echo "พบโปรเจกต์ที่: $(dirname "$f")"
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -25,11 +37,12 @@ jobs:
           gradle-version: 8.10.2
 
       - name: Build debug APK
+        working-directory: ${{ steps.proj.outputs.dir }}
         run: gradle assembleDebug --no-daemon --stacktrace
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: GameDPI-Master-debug-apk
-          path: app/build/outputs/apk/debug/*.apk
+          path: ${{ steps.proj.outputs.dir }}/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
